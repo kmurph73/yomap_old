@@ -10,10 +10,12 @@ $ ->
   $(document).on 'mouseenter', '.tip', -> $(this).tooltip().tooltip('show')
   $(document).on 'mouseleave', '.tip', -> $(this).tooltip('hide')
 
+center = [36.641874, -119.250060]
+
 initialize = ->
   mapOptions =
-    zoom: 3
-    center: new google.maps.LatLng(24.4441, 121.19313333333334)
+    zoom: 5
+    center: new google.maps.LatLng(center[0], center[1])
     mapTypeId: google.maps.MapTypeId.TERRAIN
 
   data.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions)

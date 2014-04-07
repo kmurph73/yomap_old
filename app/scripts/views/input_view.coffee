@@ -4,7 +4,7 @@ _ = @_
 App.InputView = Backbone.View.extend
   el: '#side'
   initialize: (options) ->
-    names = App.territories.getNames(['state','country'])
+    names = App.territories.getNames(['state','country','city'])
     App.openTerritories.on 'remove', @clearInput, @
     App.vent.on 'renderPolygon', @clearInput, @
 

@@ -1,63 +1,54 @@
 App = @App
 _ = @_
+LatLng = @google.maps.LatLng
 
-App.Territory = Backbone.Model.extend
+gmapify = (points) -> _.map points, (point) -> new LatLng(point[0],point[1])
+
+purgeSinglePoints = (polygons) ->
+  for polygon in polygons
+    polygon.points = gmapify(_.reject(polygon.points, (point) -> point.length < 2))
+
+App.Territory = Territory = Backbone.Model.extend
   initialize: ->
     @set('polygons', [])
 
   defaults:
     loaded: false
 
-App.TerritoryList = Backbone.Collection.extend
-  initialize: (options) ->
-    App.vent.on 'removeTerritory', @removeTerritory, this
+Territory.fetchCountry = (country, cb) ->
+  url = "data/countries/#{country.get('abbrev')}.json"
 
-  model: App.Territory
+  $.getJSON(url).then (resp) ->
+    purgeSinglePoints(resp.polygons)
+    country.set('loaded',true)
+    cb(resp)
 
-  findByAttr: (name, prop = 'name') ->
-    @find (c) -> c.get(prop) == name
+Territory.fetchCity = (city, cb) ->
+  url = "data/cities/usa/ca/#{city.get('abbrev')}.json"
+  $.getJSON(url).then (resp) ->
+    newResp = {}
+    newResp.polygons = _.map resp.polygons, (poly) ->
+      gon = []
 
-  fetchByName: (name, cb) ->
-    item = @findByAttr(name)
-    type = item.get('type')
-    if item.get('loaded')
-      App.vent.trigger 'renderPolygon', item
-    if type == 'country'
-      @fetchCountry item, (resp) ->
-        item.data = resp
-        App.vent.trigger 'renderPolygon', item
-    else if type == 'state'
-      @fetchStates -> App.vent.trigger 'renderPolygon', item
+      outerCoords = _.map poly.outerCoords, (point) -> new LatLng point[1],point[0]
+      innerCoords = _.map poly.innerCoords, (coords) -> _.map coords, (point) -> new LatLng point[1],point[0]
 
-  setStatePoints: (data) ->
+      gon.push outerCoords
+
+      for c in innerCoords
+        gon.push c
+
+      gon
+
+    city.set('loaded',true)
+    cb(newResp)
+
+Territory.fetchStates = (cb) ->
+  $.getJSON("data/states.json").then (resp) =>
     territories = App.territories
-
-    for datum in data
+    for datum in resp
       state = territories.findByAttr(datum.name)
       state.set('loaded',true)
-      state.points = datum.points
+      state.points = gmapify(datum.points)
 
-  getNames: (names) ->
-    final = []
-
-    if _.isArray(names)
-      arr = []
-      for name,index in names
-        arr[index] = @where(type: name)
-      final = _.flatten arr
-    else
-      @where(name:names)
-
-    _.map final, (model) -> model.get('name')
-
-  fetchCountry: (country, cb) ->
-    url = "data/countries/#{country.get('abbrev')}.json"
-
-    $.getJSON(url).then (resp) ->
-      country.set('loaded',true)
-      cb(resp)
-
-  fetchStates: (cb) ->
-    $.getJSON("data/states.json").then (resp) =>
-      @setStatePoints(resp)
-      cb()
+    cb()

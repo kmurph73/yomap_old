@@ -1,13 +1,15 @@
 require 'nokogiri'
 require 'pry'
 require 'json'
-require 'debugger'
+require 'byebug'
 
-countries_dir = '/Users/kmurph/Downloads/heynow.kml'
-states_dir = 'data/states.xml'
+countries_file = 'kml/countries.kml'
+states_file = 'kml/states.xml'
+cities_file = 'kml/ca_places.kml'
 
-countries_xml = Nokogiri::XML(File.open(countries_dir))
-states_xml = Nokogiri::XML(File.open(states_dir))
+countries_xml = Nokogiri::XML(File.open(countries_file))
+states_xml = Nokogiri::XML(File.open(states_file))
+ca_cities_xml = Nokogiri::XML(File.open(cities_file))
 
 ["scalerank", "featurecla", "LABELRANK", "SOVEREIGNT", "SOV_A3", "ADM0_DIF", "LEVEL", "TYPE", "ADMIN", "ADM0_A3", "GEOU_DIF", "GEOUNIT", "GU_A3",
 "SU_DIF", "SUBUNIT", "SU_A3", "BRK_DIFF", "NAME_LONG", "BRK_A3", "BRK_NAME", "ABBREV", "POSTAL", "FORMAL_EN", "NAME_SORT",
@@ -18,16 +20,15 @@ states_xml = Nokogiri::XML(File.open(states_dir))
 
 metadata = {
   countries: [],
+  cities: [],
   states: []
 }
 
 def to_slug(str)
-  str.gsub! /[.'`]/,""
-  str.downcase!
+  str.gsub(/[.'`]/,"").downcase.
 
   #replace all non alphanumeric, underscore or periods with underscore
-  str.gsub! /\s*[^A-Za-z0-9\.\-]\s*/, ''
-  str
+  gsub /\s*[^A-Za-z0-9\.\-]\s*/, ''
 end
 
 def find_thing(data,name)
@@ -70,10 +71,11 @@ countries_xml.css('Placemark').each do |p|
     poly.text.split(',').each do |s|
       polygon[:points] << s.split(' ').map {|n| n.to_f }
     end
+
     hash[:polygons] << polygon
   end
 
-  File.open("data/countries/#{slug}.json", 'w') { |file| file.write(hash.to_json) }
+  File.open("app/data/countries/#{slug}.json", 'w') { |file| file.write(hash.to_json) }
   metadata[:countries] << meta
 end
 
@@ -95,5 +97,56 @@ states_xml.css('state').each do |s|
   states << hash
 end
 
-File.open('data/states.json', 'w') { |file| file.write(states.to_json) }
-File.open('data/meta.json', 'w') { |file| file.write(metadata.to_json) }
+File.open('app/data/states.json', 'w') { |file| file.write(states.to_json) }
+
+cities = []
+
+ca_cities_xml.css('Placemark').each do |p|
+  meta = {}
+  hash = {}
+
+  thing = p.search('SimpleData[@name=NAMELSAD]')[0]
+  if thing
+    name = thing.text()
+
+    hash[:name] = meta[:name] = name
+    meta[:abbrev] = abbrev = to_slug(name)
+
+    polygons = []
+
+    p.css('Polygon').map do |polygon|
+      poly = {innerCoords: []}
+      outerCoords = polygon.css('outerBoundaryIs')[0].css('coordinates')[0].text().split(' ').map {|c| c.split(',') }
+
+      if abbrev == 'sanluisobispocity'
+        p 'outerCoords'
+        p outerCoords
+      end
+
+      poly[:outerCoords] = outerCoords
+
+      innerBoundary = polygon.css('innerBoundaryIs')
+
+      innerBoundary.each do |ib|
+        innerCoords = ib.css('coordinates')[0].text().split(' ').map {|c| c.split(',') }
+        if abbrev == 'sanluisobispocity'
+          p 'innerCoords'
+          p innerCoords
+        end
+
+        poly[:innerCoords].push innerCoords
+      end
+
+      polygons << poly
+    end
+
+    metadata[:cities] << meta
+    hash[:polygons] = polygons
+
+    File.open("app/data/cities/usa/ca/#{abbrev}.json", 'w') { |file| file.write(hash.to_json) }
+
+    cities << hash
+  end
+end
+
+File.open('app/data/meta.json', 'w') { |file| file.write(metadata.to_json) }

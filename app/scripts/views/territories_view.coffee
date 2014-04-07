@@ -34,7 +34,7 @@ App.TerritoriesView = Backbone.View.extend
 
     [type,abbrev] = id.split('_')
 
-    if type == 'country'
+    if type == 'country' or 'city'
       territory = App.openTerritories.findWhere(type:type,abbrev:abbrev)
     else if type == 'state'
       territory = App.openTerritories.findWhere(type:type,name:abbrev)
