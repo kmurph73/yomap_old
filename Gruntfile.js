@@ -8,7 +8,6 @@
 // 'test/spec/**/*.js'
 
 module.exports = function (grunt) {
-
     // Load grunt tasks automatically
     require('load-grunt-tasks')(grunt);
 
@@ -221,6 +220,7 @@ module.exports = function (grunt) {
             dist: {
                 files: {
                     src: [
+                        '<%= config.dist %>/data/{,*/}*.js',
                         '<%= config.dist %>/scripts/{,*/}*.js',
                         '<%= config.dist %>/styles/{,*/}*.css',
                         '<%= config.dist %>/images/{,*/}*.*',
@@ -334,6 +334,7 @@ module.exports = function (grunt) {
                         'images/{,*/}*.webp',
                         '{,*/}*.html',
                         'styles/fonts/{,*/}*.*',
+                        'data/**/*.json',
                         'bower_components/bootstrap-sass-official/vendor/assets/fonts/bootstrap/*.*'
                     ]
                 }]
