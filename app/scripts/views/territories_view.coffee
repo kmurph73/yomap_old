@@ -12,7 +12,7 @@ App.TerritoriesView = Backbone.View.extend
     'click a': 'clickTerritory'
 
   render: ->
-    html = ""
+    html = "<ul>"
     for terr in App.openTerritories.models
       type = terr.get('type')
       html += "
@@ -21,7 +21,9 @@ App.TerritoriesView = Backbone.View.extend
           <a href='#' class='remove tip' title='remove'>x</a>
           <a></a>
           <a class='reset tip' title='reset'>r</a>
-        </span>"
+        </span> &bull; "
+
+    html += "</ul>"
 
     @$el.html html
 
