@@ -3,4 +3,5 @@ node_modules
 .tmp
 .sass-cache
 app/bower_components
+data
 test/bower_components
