@@ -5,15 +5,15 @@ App.TerritoriesView = Backbone.View.extend
   el: '#open-territories'
 
   initialize: ->
-    App.openTerritories.on 'add', @render, @
-    App.openTerritories.on 'remove', @render, @
+    App.territories.on 'add', @render, @
+    App.territories.on 'remove', @render, @
 
   events:
     'click a': 'clickTerritory'
 
   render: ->
     html = "<ul>"
-    for terr in App.openTerritories.models
+    for terr in App.territories.models
       type = terr.get('type')
       html += "
         <span id='#{type}_#{terr.get('abbrev') || terr.get('name')}'>
@@ -37,12 +37,12 @@ App.TerritoriesView = Backbone.View.extend
     [type,abbrev] = id.split('_')
 
     if type == 'country' or 'city'
-      territory = App.openTerritories.findWhere(type:type,abbrev:abbrev)
+      territory = App.territories.findWhere(type:type,abbrev:abbrev)
     else if type == 'state'
-      territory = App.openTerritories.findWhere(type:type,name:abbrev)
+      territory = App.territories.findWhere(type:type,name:abbrev)
 
     if target.hasClass('remove')
-      App.vent.trigger 'removeTerritory', territory
+      App.territories.remove territory
     else if target.hasClass('reset')
       App.vent.trigger 'resetTerritory', territory
     else if target.hasClass('center')

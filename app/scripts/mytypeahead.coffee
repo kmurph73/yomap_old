@@ -15,12 +15,38 @@ substringMatcher = (strs) ->
 
     cb matches
 
-@$.fn.myTypeAhead = (arr) ->
-  @typeahead
-    hint: true
-    highlight: true
-    minLength: 1
-  ,
-    name: "stuff"
-    displayKey: "value"
-    source: substringMatcher(arr)
+engine = new Bloodhound
+  name: "territories"
+  remote: {
+    url: "http://107.170.247.145/territories?q=%QUERY"
+    filter: (resp) -> JSON.parse(resp)
+    ajax:
+      dataType: 'jsonp'
+  }
+  displayKey: 'name'
+  datumTokenizer: (d) -> debugger; Bloodhound.tokenizers.whitespace d.val
+  queryTokenizer: Bloodhound.tokenizers.whitespace
+  limit: 10
+  templates: {
+    empty: ""
+    suggestion: _.template("
+      <p><strong><% console.log('heyo')%><%= name %></strong></p>")
+  }
+
+promise = engine.initialize()
+
+promise.done(=>
+  console.log "success!"
+
+  @$.fn.myTypeAhead = (arr) ->
+    @typeahead
+      hint: true
+      highlight: true
+      minLength: 1
+    ,
+      name: "stuff"
+      displayKey: "value"
+      source: engine.ttAdapter()
+).fail ->
+  console.log "err!"
+

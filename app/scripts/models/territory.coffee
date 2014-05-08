@@ -4,9 +4,9 @@ LatLng = @google.maps.LatLng
 
 gmapify = (points) -> _.map points, (point) -> new LatLng(point[0],point[1])
 
-purgeSinglePoints = (polygons) ->
-  for polygon in polygons
-    polygon.points = gmapify(_.reject(polygon.points, (point) -> point.length < 2))
+purgeLonePoints = (coords) -> _.reject(coords, (point) -> point.length < 2)
+
+root = 'https://s3-us-west-2.amazonaws.com/yodap'
 
 App.Territory = Territory = Backbone.Model.extend
   initialize: ->
@@ -16,22 +16,23 @@ App.Territory = Territory = Backbone.Model.extend
     loaded: false
 
 Territory.fetchCountry = (country, cb) ->
-  url = "data/countries/#{country.get('abbrev')}.json"
+  url = "#{root}/countries/#{country.get('abbrev')}.json"
 
   $.getJSON(url).then (resp) ->
-    purgeSinglePoints(resp.polygons)
+    purgeLonePoints(resp.polygons)
     country.set('loaded',true)
     cb(resp)
 
-Territory.fetchCity = (city, cb) ->
-  url = "data/cities/usa/ca/#{city.get('abbrev')}.json"
-  $.getJSON(url).then (resp) ->
-    newResp = {}
-    newResp.polygons = _.map resp.polygons, (poly) ->
+Territory.fetchCity = (item, cb) ->
+  url = "#{root}/cities/#{item.get('country')}/#{item.get('state')}/#{item.get('abbrev')}.json"
+  $.getJSON(url).then( (resp) ->
+    polygons = _.map resp.polygons, (poly) ->
       gon = []
 
-      outerCoords = _.map poly.outerCoords, (point) -> new LatLng point[1],point[0]
-      innerCoords = _.map poly.innerCoords, (coords) -> _.map coords, (point) -> new LatLng point[1],point[0]
+      outerCoords = _.map purgeLonePoints(poly.outerCoords), (point) -> new LatLng(point[1],point[0])
+      innerCoords = _.map poly.innerCoords, (coords) -> _.map purgeLonePoints(coords), (point) -> new LatLng(point[1],point[0])
+
+      resp
 
       gon.push outerCoords
 
@@ -40,8 +41,8 @@ Territory.fetchCity = (city, cb) ->
 
       gon
 
-    city.set('loaded',true)
-    cb(newResp)
+    cb(polygons)
+  ).fail( (fail) -> debugger )
 
 Territory.fetchStates = (cb) ->
   $.getJSON("data/states.json").then (resp) =>

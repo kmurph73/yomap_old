@@ -6,7 +6,7 @@ App.MapView = Backbone.View.extend
 
   initialize: (options) ->
     App.vent.on 'renderPolygon', @renderTerritory, @
-    App.vent.on 'removeTerritory', @removeTerritory, @
+    App.territories.on 'remove', @removeTerritory, @
     App.vent.on 'resetTerritory', @resetTerritory, @
     App.vent.on 'centerTerritory', @centerTerritory, @
 
@@ -42,10 +42,10 @@ App.MapView = Backbone.View.extend
       color = "#0099FF"
       @renderPolygon(terr, map, terr.points)
     else if type == 'country'
-      for poly in terr.data.polygons
-        @renderPolygon(terr, map,poly.points)
+      for poly in terr.polygons
+        @renderPolygon(terr, map, poly.points)
     else if type == 'city'
-      for poly in terr.data.polygons
+      for poly in terr.polygons
         @renderPolygon(terr, map, poly)
 
   centerTerritory: (terr) ->
@@ -73,19 +73,3 @@ App.MapView = Backbone.View.extend
     )
 
     layer.setMap(App.data.map)
-
-  renderSlo: ->
-    first = _.map(window.first, (point) -> new google.maps.LatLng(point[1], point[0]))
-    second = _.map(window.second, (point) -> new google.maps.LatLng(point[1], point[0]))
-
-    map = App.data.map
-    polygon = new google.maps.Polygon
-      map: map
-      paths: [first,second]
-      strokeColor: "#FF0000"
-      strokeOpacity: 0.8
-      strokeWeight: 1
-      fillColor: "#FF0000"
-      fillOpacity: 0.35
-      draggable: true
-      geodesic: true

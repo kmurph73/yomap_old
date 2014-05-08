@@ -5,7 +5,7 @@ App.InputView = Backbone.View.extend
   el: '#side'
   initialize: (options) ->
     names = App.territories.getNames(['state','country','city'])
-    App.openTerritories.on 'remove', @clearInput, @
+    App.territories.on 'remove', @clearInput, @
     App.vent.on 'renderPolygon', @clearInput, @
 
     $("input#countryInput").myTypeAhead(names).on('typeahead:selected', @selected)
@@ -14,9 +14,9 @@ App.InputView = Backbone.View.extend
     target = $(e.currentTarget)
     target.val('')
 
-    val = selected.value
+    territory = App.territories.findOrCreate selected
 
-    App.territories.fetchByName(val)
+    App.territories.gotime territory
 
   clearInput: (e) ->
     $('input#countryInput').val('')

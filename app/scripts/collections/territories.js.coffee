@@ -4,29 +4,40 @@ Territory = App.Territory
 
 App.TerritoryList = Backbone.Collection.extend
   initialize: (options) ->
-    App.vent.on 'removeTerritory', @removeTerritory, this
+    App.vent.on 'removeTerritory', @removeTerritory, @
 
   model: Territory
 
   findByAttr: (name, prop = 'name') ->
     @find (c) -> c.get(prop) == name
 
-  fetchByName: (name, cb) ->
-    item = @findByAttr(name)
-    type = item.get('type')
-    if item.get('loaded')
-      App.vent.trigger 'renderPolygon', item
+  findOrCreate: (obj) ->
+    model = @findWhere
+      abbrev: obj.abbrev
+      state: obj.state
+      country: obj.country
+      type: obj.type
+
+    if !model
+      model = @add obj
+
+    model
+
+  gotime: (terr) ->
+    type = terr.get('type')
+    if terr.data
+      App.vent.trigger 'renderPolygon', terr
     else
       if type == 'country'
-        Territory.fetchCountry item, (resp) ->
-          item.data = resp
-          App.vent.trigger 'renderPolygon', item
+        Territory.fetchCountry terr, (resp) ->
+          terr.data = resp
+          App.vent.trigger 'renderPolygon', terr
       else if type == 'state'
-        Territory.fetchStates -> App.vent.trigger 'renderPolygon', item
+        Territory.fetchStates -> App.vent.trigger 'renderPolygon', terr
       else if type == 'city'
-        Territory.fetchCity item, (resp) ->
-          item.data = resp
-          App.vent.trigger 'renderPolygon', item
+        Territory.fetchCity terr, (resp) ->
+          terr.polygons = resp
+          App.vent.trigger 'renderPolygon', terr
 
   addList: (list,attrs) ->
     for territory in list
