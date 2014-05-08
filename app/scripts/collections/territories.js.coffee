@@ -30,7 +30,7 @@ App.TerritoryList = Backbone.Collection.extend
     else
       if type == 'country'
         Territory.fetchCountry terr, (resp) ->
-          terr.data = resp
+          terr.polygons = resp
           App.vent.trigger 'renderPolygon', terr
       else if type == 'state'
         Territory.fetchStates -> App.vent.trigger 'renderPolygon', terr

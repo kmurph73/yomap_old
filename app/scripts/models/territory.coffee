@@ -2,7 +2,21 @@ App = @App
 _ = @_
 LatLng = @google.maps.LatLng
 
-gmapify = (points) -> _.map points, (point) -> new LatLng(point[0],point[1])
+gmapifyPoints = (points) -> _.map points, (point) -> new LatLng(point[1],point[0])
+
+gmapifyPolygons = (polygons) ->
+  _.map polygons, (poly) ->
+    gon = []
+
+    outerCoords = gmapifyPoints(purgeLonePoints(poly.outerCoords))
+    innerCoords = _.map poly.innerCoords, (coords) -> gmapifyPoints(purgeLonePoints(coords))
+
+    gon.push outerCoords
+
+    for c in innerCoords
+      gon.push c
+
+    gon
 
 purgeLonePoints = (coords) -> _.reject(coords, (point) -> point.length < 2)
 
@@ -19,27 +33,14 @@ Territory.fetchCountry = (country, cb) ->
   url = "#{root}/countries/#{country.get('abbrev')}.json"
 
   $.getJSON(url).then (resp) ->
-    purgeLonePoints(resp.polygons)
-    country.set('loaded',true)
-    cb(resp)
+    polygons = gmapifyPolygons(resp.polygons)
+
+    cb(polygons)
 
 Territory.fetchCity = (item, cb) ->
   url = "#{root}/cities/#{item.get('country')}/#{item.get('state')}/#{item.get('abbrev')}.json"
   $.getJSON(url).then( (resp) ->
-    polygons = _.map resp.polygons, (poly) ->
-      gon = []
-
-      outerCoords = _.map purgeLonePoints(poly.outerCoords), (point) -> new LatLng(point[1],point[0])
-      innerCoords = _.map poly.innerCoords, (coords) -> _.map purgeLonePoints(coords), (point) -> new LatLng(point[1],point[0])
-
-      resp
-
-      gon.push outerCoords
-
-      for c in innerCoords
-        gon.push c
-
-      gon
+    polygons = gmapifyPolygons(resp.polygons)
 
     cb(polygons)
   ).fail( (fail) -> debugger )

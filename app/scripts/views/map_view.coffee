@@ -38,15 +38,8 @@ App.MapView = Backbone.View.extend
 
     type = terr.get('type')
 
-    if type == 'state'
-      color = "#0099FF"
-      @renderPolygon(terr, map, terr.points)
-    else if type == 'country'
-      for poly in terr.polygons
-        @renderPolygon(terr, map, poly.points)
-    else if type == 'city'
-      for poly in terr.polygons
-        @renderPolygon(terr, map, poly)
+    for poly in terr.polygons
+      @renderPolygon(terr, map, poly)
 
   centerTerritory: (terr) ->
     map = App.data.map
