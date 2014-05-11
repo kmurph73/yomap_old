@@ -18,7 +18,7 @@ substringMatcher = (strs) ->
 if location.port == '9000'
   url = 'http://localhost:4567'
 else
-  url = 'https://s3-us-west-2.amazonaws.com'
+  url = 'http://107.170.247.145'
 
 engine = new Bloodhound
   name: "territories"
