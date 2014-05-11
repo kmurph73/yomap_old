@@ -9,6 +9,7 @@ App.MapView = Backbone.View.extend
     App.territories.on 'remove', @removeTerritory, @
     App.vent.on 'resetTerritory', @resetTerritory, @
     App.vent.on 'centerTerritory', @centerTerritory, @
+    App.vent.on 'gotoTerritory', @gotoTerritory, @
 
   removeTerritory: (t) ->
     for poly in t.get('polygons')
@@ -41,9 +42,13 @@ App.MapView = Backbone.View.extend
     for poly in terr.polygons
       @renderPolygon(terr, map, poly)
 
+  gotoTerritory: (terr) ->
+    center = terr.getCenter()
+    debugger
+
   centerTerritory: (terr) ->
     map = App.data.map
-    center = map.getCenter()
+    map.getCenter()
 
   kmlRender: ->
     layer = new google.maps.FusionTablesLayer(

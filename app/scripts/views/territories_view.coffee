@@ -54,24 +54,24 @@ App.TerritoriesView = Backbone.View.extend
 
     target = @$(e.currentTarget)
 
-    target.find('.actions').toggle( "slide", =>
-      target.find('.fa-long-arrow-right').show()
-    )
+    target.find('.actions').toggle "slide", =>
+      target.find('.right-arrow .fa')
+      .removeClass('fa-long-arrow-up').addClass('fa-long-arrow-right')
 
   enterTerr: (e) ->
     e.preventDefault()
 
     target = @$(e.currentTarget)
-    target.find('.actions').toggle( "slide", =>
-      target.find('.fa-long-arrow-right').hide()
-    )
+    target.find('.actions').toggle "slide", =>
+      target.find('.right-arrow .fa')
+      .removeClass('fa-long-arrow-right').addClass('fa-long-arrow-up')
 
   clickTerritory: (e) ->
     e.preventDefault()
 
     target = @$(e.currentTarget)
 
-    id = target.closest('span').attr('id')
+    id = target.closest('.territory-item').attr('id')
 
     [type,abbrev] = id.split('_')
 
@@ -86,3 +86,6 @@ App.TerritoriesView = Backbone.View.extend
       App.vent.trigger 'resetTerritory', territory
     else if target.hasClass('center')
       App.vent.trigger 'centerTerritory', territory
+    else if target.hasClass('goto')
+      console.log 'goto'
+      App.vent.trigger 'gotoTerritory', territory
