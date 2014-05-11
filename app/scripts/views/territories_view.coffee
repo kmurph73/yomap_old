@@ -9,23 +9,62 @@ App.TerritoriesView = Backbone.View.extend
     App.territories.on 'remove', @render, @
 
   events:
-    'click a': 'clickTerritory'
+    'click i': 'clickTerritory'
+    'mouseenter .territory-item': 'enterTerr'
+    'mouseleave .territory-item': 'leaveTerr'
 
   render: ->
     html = "<ul>"
-    for terr in App.territories.models
+    models = App.territories.models
+    for terr,index in models
       type = terr.get('type')
       html += "
-        <span id='#{type}_#{terr.get('abbrev') || terr.get('name')}'>
+        <span class='territory-item' id='#{type}_#{terr.get('abbrev') || terr.get('name')}'>
           #{terr.get('name')}
-          <a href='#' class='remove tip' title='remove'>x</a>
-          <a></a>
-          <a class='reset tip' title='reset'>r</a>
-        </span> &bull; "
+          <span class='right-arrow'>
+            <span>
+              <i href='#' class='fa fa-long-arrow-right'></i>
+            </span>
+          </span>
+          <span>
+            <span class='actions unimporant-hide'>
+              <span>
+                <i href='#' class='fa fa-times remove tip' title='remove'></i>
+              </span>
+              <span>
+                <i class='fa fa-refresh reset tip' title='reset'></i>
+              </span>
+              <span>
+                <i class='fa fa-arrows goto tip' title='go to #{terr.get('type')}'></i>
+              </span>
+            </span>
+          </span>"
+
+      if (index + 1) != models.length
+          html += "<span><i class='fa fa-circle'></i></span>"
+
+      html += "</span>"
 
     html += "</ul>"
 
     @$el.html html
+
+  leaveTerr: (e) ->
+    e.preventDefault()
+
+    target = @$(e.currentTarget)
+
+    target.find('.actions').toggle( "slide", =>
+      target.find('.fa-long-arrow-right').show()
+    )
+
+  enterTerr: (e) ->
+    e.preventDefault()
+
+    target = @$(e.currentTarget)
+    target.find('.actions').toggle( "slide", =>
+      target.find('.fa-long-arrow-right').hide()
+    )
 
   clickTerritory: (e) ->
     e.preventDefault()

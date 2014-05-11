@@ -33,7 +33,9 @@ App.TerritoryList = Backbone.Collection.extend
           terr.polygons = resp
           App.vent.trigger 'renderPolygon', terr
       else if type == 'state'
-        Territory.fetchStates -> App.vent.trigger 'renderPolygon', terr
+        Territory.fetchState terr, (resp) ->
+          terr.polygons = resp
+          App.vent.trigger 'renderPolygon', terr
       else if type == 'city'
         Territory.fetchCity terr, (resp) ->
           terr.polygons = resp

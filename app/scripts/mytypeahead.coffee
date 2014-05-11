@@ -15,18 +15,23 @@ substringMatcher = (strs) ->
 
     cb matches
 
+if location.port == '9000'
+  url = 'http://localhost:4567'
+else
+  url = 'https://s3-us-west-2.amazonaws.com'
+
 engine = new Bloodhound
   name: "territories"
   remote: {
-    url: "http://107.170.247.145/territories?q=%QUERY"
+    url: "#{url}/territories?q=%QUERY"
     filter: (resp) -> JSON.parse(resp)
     ajax:
       dataType: 'jsonp'
   }
   displayKey: 'name'
-  datumTokenizer: (d) -> debugger; Bloodhound.tokenizers.whitespace d.val
+  datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.val
   queryTokenizer: Bloodhound.tokenizers.whitespace
-  limit: 10
+  limit: 15
   templates: {
     empty: ""
     suggestion: _.template("
@@ -47,6 +52,4 @@ promise.done(=>
       name: "stuff"
       displayKey: "value"
       source: engine.ttAdapter()
-).fail ->
-  console.log "err!"
-
+).fail -> console.log "err!"

@@ -22,6 +22,17 @@ purgeLonePoints = (coords) -> _.reject(coords, (point) -> point.length < 2)
 
 root = 'https://s3-us-west-2.amazonaws.com/yodap'
 
+rad = (x) -> x * Math.PI / 180
+
+getDistance = (p1, p2) ->
+  R = 6378137 # Earth’s mean radius in meter
+  dLat = rad(p2.lat() - p1.lat())
+  dLong = rad(p2.lng() - p1.lng())
+  a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) * Math.sin(dLong / 2) * Math.sin(dLong / 2)
+  c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  d = R * c
+  d # returns the distance in meter
+
 App.Territory = Territory = Backbone.Model.extend
   initialize: ->
     @set('polygons', [])
@@ -45,12 +56,7 @@ Territory.fetchCity = (item, cb) ->
     cb(polygons)
   ).fail( (fail) -> debugger )
 
-Territory.fetchStates = (cb) ->
-  $.getJSON("data/states.json").then (resp) =>
-    territories = App.territories
-    for datum in resp
-      state = territories.findByAttr(datum.name)
-      state.set('loaded',true)
-      state.points = gmapify(datum.points)
-
-    cb()
+Territory.fetchState = (item, cb) ->
+  $.getJSON("#{root}/states/#{item.get('abbrev')}.json").then (resp) =>
+    polygons = gmapifyPolygons(resp.polygons)
+    cb(polygons)
