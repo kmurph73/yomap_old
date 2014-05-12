@@ -1,5 +1,6 @@
 App = @App
 _ = @_
+data = App.data
 
 App.MapView = Backbone.View.extend
   el: '#map-canvas'
@@ -43,8 +44,19 @@ App.MapView = Backbone.View.extend
       @renderPolygon(terr, map, poly)
 
   gotoTerritory: (terr) ->
-    center = terr.getCenter()
-    debugger
+    map = data.map
+    map.setCenter terr.getCenter()
+    type = terr.get('type')
+
+    switch type
+      when 'city'
+        zoom = 10
+      when 'state'
+        zoom = 5
+      when 'country'
+        zoom = 2
+
+    map.setZoom zoom
 
   centerTerritory: (terr) ->
     map = App.data.map

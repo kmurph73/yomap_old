@@ -14,7 +14,7 @@ App.TerritoriesView = Backbone.View.extend
     'mouseleave .territory-item': 'leaveTerr'
 
   render: ->
-    html = "<ul>"
+    html = ""
     models = App.territories.models
     for terr,index in models
       type = terr.get('type')
@@ -40,12 +40,10 @@ App.TerritoriesView = Backbone.View.extend
             </span>
           </span>"
 
-      if (index + 1) != models.length
-          html += "<span><i class='fa fa-circle'></i></span>"
-
       html += "</span>"
 
-    html += "</ul>"
+      if (index + 1) != models.length
+        html += "<span><i class='fa fa-circle'></i></span>"
 
     @$el.html html
 

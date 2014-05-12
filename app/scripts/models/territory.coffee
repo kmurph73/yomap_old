@@ -2,7 +2,6 @@ App = @App
 _ = @_
 maps = @google.maps
 LatLng = maps.LatLng
-bounds = new maps.LatLngBounds()
 
 gmapifyPoints = (points) -> _.map points, (point) -> new LatLng(point[1],point[0])
 
@@ -26,42 +25,6 @@ root = 'https://s3-us-west-2.amazonaws.com/yodap'
 
 rad = (x) -> x * Math.PI / 180
 
-getHighestPoint = (points) ->
-  highest = points[0]
-
-  for p in points
-    if p.lat() > highest.lat()
-      highest = p
-
-  highest
-
-getLowestPoint = (points) ->
-  lowest = points[0]
-
-  for p in points
-    if p.lat() < lowest.lat()
-      lowest = p
-
-  lowest
-
-getRightestPoint = (points) ->
-  rightest = points[0]
-
-  for p in points
-    if p.lng() > rightest.lng()
-      rightest = p
-
-  rightest
-
-getLeftestPoint = (points) ->
-  leftest = points[0]
-
-  for p in points
-    if p.lng() < lowest.lng()
-      leftest = p
-
-  leftest
-
 getDistance = (p1, p2) ->
   R = 6378137 # Earth’s mean radius in meter
   dLat = rad(p2.lat() - p1.lat())
@@ -79,16 +42,14 @@ App.Territory = Territory = Backbone.Model.extend
     loaded: false
 
   getCenter: ->
+    bounds = new maps.LatLngBounds()
     polygons = @polygons
-    highest = getHighestPoint(polygons[0][0])
-    lowest = getLowestPoint(polygons[0][0])
-    leftest = getLeftestPoint(polygons[0][0])
-    rightest = getRightestPoint(polygons[0][0])
+    points = polygons[0][0]
 
-    center_x = lowest + ((highest - lowest) / 2);
-    center_y = leftest + ((rightest - leftest) / 2);
+    for p in points
+      bounds.extend p
 
-    poly = @polygons[0]
+    bounds.getCenter()
 
 Territory.fetchCountry = (country, cb) ->
   url = "#{root}/countries/#{country.get('abbrev')}.json"

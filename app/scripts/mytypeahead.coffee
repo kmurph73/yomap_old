@@ -28,6 +28,7 @@ engine = new Bloodhound
     ajax:
       dataType: 'jsonp'
   }
+
   displayKey: 'name'
   datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.val
   queryTokenizer: Bloodhound.tokenizers.whitespace
@@ -35,7 +36,7 @@ engine = new Bloodhound
   templates: {
     empty: ""
     suggestion: _.template("
-      <p><strong><% console.log('heyo')%><%= name %></strong></p>")
+      <p><strong><%= name %></strong></p>")
   }
 
 promise = engine.initialize()
@@ -52,4 +53,5 @@ promise.done(=>
       name: "stuff"
       displayKey: "value"
       source: engine.ttAdapter()
+
 ).fail -> console.log "err!"
