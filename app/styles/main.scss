@@ -3,5 +3,6 @@ $fa-font-path: "/bower_components/font-awesome/fonts";
 
 // bower:scss
 @import "../bower_components/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss";
-@import "styles"
+@import "../bower_components/font-awesome/scss/font-awesome.scss";
+@import "styles";
 // endbower
