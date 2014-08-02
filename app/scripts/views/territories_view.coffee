@@ -9,62 +9,33 @@ App.TerritoriesView = Backbone.View.extend
     App.territories.on 'remove', @render, @
 
   events:
-    'click i': 'clickTerritory'
-    'mouseenter .territory-item': 'enterTerr'
-    'mouseleave .territory-item': 'leaveTerr'
+    'click .action': 'clickAction'
 
   render: ->
-    html = ""
+    html = "<ul class='nav nav-pills'>"
     models = App.territories.models
     for terr,index in models
       type = terr.get('type')
-      html += "
-        <span class='territory-item' id='#{type}_#{terr.get('abbrev') || terr.get('name')}'>
-          #{terr.get('name')}
-          <span class='right-arrow'>
-            <span>
-              <i href='#' class='fa fa-long-arrow-right'></i>
-            </span>
-          </span>
-          <span>
-            <span class='actions unimporant-hide'>
-              <span>
-                <i href='#' class='fa fa-times remove tip' title='remove'></i>
-              </span>
-              <span>
-                <i class='fa fa-refresh reset tip' title='reset'></i>
-              </span>
-              <span>
-                <i class='fa fa-arrows goto tip' title='go to #{terr.get('type')}'></i>
-              </span>
-            </span>
-          </span>"
+      html += """
+        <li id='#{type}_#{terr.get('abbrev') || terr.get('name')}' class="territory-item dropdown">
+          <a id="drop4" role="button" data-toggle="dropdown" href="#">#{terr.get('name')}<span class="caret"></span></a>
+          <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
+            <li class='action reset' role="presentation"><a role="menuitem" tabindex="-1" href="#">Reset</a></li>
+            <li class='action goto' role="presentation"><a role="menuitem" tabindex="-1" href="#">Go to</a></li>
+            <li role="presentation" class="divider"></li>
+            <li class='action remove' role="presentation"><a role="menuitem" tabindex="-1" href="#">Remove</a></li>
+          </ul>
+        </li>
+      """
 
-      html += "</span>"
+      html += "</ul>"
 
       if (index + 1) != models.length
         html += "<span><i class='fa fa-circle'></i></span>"
 
     @$el.html html
 
-  leaveTerr: (e) ->
-    e.preventDefault()
-
-    target = @$(e.currentTarget)
-
-    target.find('.actions').toggle "slide", =>
-      target.find('.right-arrow .fa')
-      .removeClass('fa-long-arrow-up').addClass('fa-long-arrow-right')
-
-  enterTerr: (e) ->
-    e.preventDefault()
-
-    target = @$(e.currentTarget)
-    target.find('.actions').toggle "slide", =>
-      target.find('.right-arrow .fa')
-      .removeClass('fa-long-arrow-right').addClass('fa-long-arrow-up')
-
-  clickTerritory: (e) ->
+  clickAction: (e) ->
     e.preventDefault()
 
     target = @$(e.currentTarget)
@@ -85,5 +56,4 @@ App.TerritoriesView = Backbone.View.extend
     else if target.hasClass('center')
       App.vent.trigger 'centerTerritory', territory
     else if target.hasClass('goto')
-      console.log 'goto'
       App.vent.trigger 'gotoTerritory', territory
