@@ -1,0 +1,12 @@
+name,type(city|country|state),country,state,polygons(json)
+
+require 'csv'
+require 'json'
+
+csv_string = CSV.generate do |csv|
+  JSON.parse(File.open("foo.json").read).each do |hash|
+    csv << hash.values
+  end
+end
+
+puts csv_string

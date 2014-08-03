@@ -1,0 +1,10 @@
+{""cities"":[{""name"":""Eagar town"",""polygons"}]}
+
+CREATE TABLE territories (
+    type        varchar(20),
+    country     varchar(20),
+    state       varchar(20),
+    name        varchar(100),
+    abbrev      varchar(100),
+    slug        varchar(100),
+);
