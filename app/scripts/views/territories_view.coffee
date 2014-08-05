@@ -28,10 +28,7 @@ App.TerritoriesView = Backbone.View.extend
         </li>
       """
 
-      html += "</ul>"
-
-      if (index + 1) != models.length
-        html += "<span><i class='fa fa-circle'></i></span>"
+    html += "</ul>"
 
     @$el.html html
 

@@ -54,7 +54,7 @@ App.MapView = Backbone.View.extend
       when 'state'
         zoom = 5
       when 'country'
-        zoom = 2
+        zoom = 4
 
     map.setZoom zoom
 
