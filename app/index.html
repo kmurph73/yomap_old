@@ -33,18 +33,19 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-      <div class="row">
-        <div id='side' class="col-sm-4">
+      <div class='row'>
+        <div id='side' style='float:left; margin-left: 20px;'>
           Search
-          <input type="search" id="countryInput" />
-          <span style='margin-left:22px'> for countries/US states/US cities to drag.  </span>
+          <input type="search" id="countryInput" style='margin:0' />
         </div>
-        <div class="col-sm-2" style='padding:3px'>
-          <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#aboutModal">
+        <div id='right' style='float:left;margin-left:25px;margin-top: -2px;'>
+          <span> for countries/US states/US cities to drag.  </span>
+          <button class="btn btn-info btn-xs" data-toggle="modal" data-target="#aboutModal">
             About
           </button>
         </div>
       </div>
+
 
       <div id='aboutModal' class="modal fade">
         <div class="modal-dialog">
@@ -55,7 +56,7 @@
             </div>
             <div class="modal-body">
               <p>
-              Thanks for trying it out!
+              Search above for countries/US States/US cities to drag... and compare sizes.  Thanks for trying it out!
               </p>
               
               <p>
