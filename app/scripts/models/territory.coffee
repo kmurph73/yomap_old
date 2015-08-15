@@ -60,7 +60,7 @@ Territory.fetchCountry = (country, cb) ->
     cb(polygons)
 
 Territory.fetchCity = (item, cb) ->
-  url = "#{root}/cities/#{item.get('country')}/#{item.get('state')}/#{item.get('abbrev')}.json"
+  url = "#{root}/cities/#{item.get('country')}/#{item.get('state')}/#{item.get('terse')}.json"
   $.getJSON(url).then( (resp) ->
     polygons = gmapifyPolygons(resp.polygons)
 

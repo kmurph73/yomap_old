@@ -17,7 +17,7 @@ App.TerritoriesView = Backbone.View.extend
     for terr,index in models
       type = terr.get('type')
       html += """
-        <li id='#{type}_#{terr.get('abbrev') || terr.get('name')}' class="territory-item dropdown">
+        <li id='#{type}_#{terr.get('abbrev') || terr.get('terse')}' class="territory-item dropdown">
           <a id="drop4" role="button" data-toggle="dropdown" href="#">#{terr.get('name')}<span class="caret"></span></a>
           <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
             <li class='action reset' role="presentation"><a role="menuitem" tabindex="-1" href="#">Reset</a></li>
@@ -41,8 +41,10 @@ App.TerritoriesView = Backbone.View.extend
 
     [type,abbrev] = id.split('_')
 
-    if type == 'country' or 'city'
+    if type == 'country'
       territory = App.territories.findWhere(type:type,abbrev:abbrev)
+    else if type == 'city'
+      territory = App.territories.findWhere(type:type,terse:abbrev)
     else if type == 'state'
       territory = App.territories.findWhere(type:type,name:abbrev)
 
