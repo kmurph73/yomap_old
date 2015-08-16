@@ -46,7 +46,7 @@ App.TerritoriesView = Backbone.View.extend
     else if type == 'city'
       territory = App.territories.findWhere(type:type,terse:abbrev)
     else if type == 'state'
-      territory = App.territories.findWhere(type:type,name:abbrev)
+      territory = App.territories.findWhere(type:type,abbrev:abbrev)
 
     if target.hasClass('remove')
       App.territories.remove territory

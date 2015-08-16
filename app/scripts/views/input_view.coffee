@@ -13,8 +13,8 @@ substringMatcher = (places) ->
     # contains the substring `q`, add it to the `matches` array
     for place in places
       if substrRegex.test(place.terse)
-        if matches.length > 10
-          return
+        if matches.length > 20
+          break
 
         matches.push
           value: place.name
