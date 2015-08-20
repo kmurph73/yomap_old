@@ -13,6 +13,7 @@ App.TerritoryList = Backbone.Collection.extend
 
   findOrCreate: (obj) ->
     model = @findWhere
+      terse: obj.terse
       abbrev: obj.abbrev
       state: obj.state
       country: obj.country
