@@ -51,6 +51,22 @@ App.Territory = Territory = Backbone.Model.extend
 
     bounds.getCenter()
 
+  getReg: ->
+    if @get('type') == 'city'
+      @get('state')
+    else if @get('type') == 'state'
+      @get('country')
+
+  friendlyName: ->
+    n = @get('name')
+
+    if @get('type') == 'city'
+      n = n + ' (' + @get('state') + ')'
+    else if @get('type') == 'state'
+      n = n + ' (' + @get('country') + ')'
+
+    n
+
 Territory.fetchCountry = (country, cb) ->
   url = "#{root}/countries/#{country.get('abbrev')}.json"
 

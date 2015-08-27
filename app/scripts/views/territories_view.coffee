@@ -17,8 +17,8 @@ App.TerritoriesView = Backbone.View.extend
     for terr,index in models
       type = terr.get('type')
       html += """
-        <li id='#{type}_#{terr.get('abbrev') || terr.get('terse')}' class="territory-item dropdown">
-          <a id="drop4" role="button" data-toggle="dropdown" href="#">#{terr.get('name')}<span class="caret"></span></a>
+        <li id='#{type}_#{terr.get('abbrev') || terr.get('terse')}' class="territory-item dropdown" data-reg='#{terr.getReg()}'>
+          <a id="drop4" role="button" data-toggle="dropdown" href="#">#{terr.friendlyName()}<span class="caret"></span></a>
           <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
             <li class='action reset' role="presentation"><a role="menuitem" tabindex="-1" href="#">Reset</a></li>
             <li class='action goto' role="presentation"><a role="menuitem" tabindex="-1" href="#">Go to</a></li>
@@ -37,16 +37,19 @@ App.TerritoriesView = Backbone.View.extend
 
     target = @$(e.currentTarget)
 
-    id = target.closest('.territory-item').attr('id')
+    a = target.closest('.territory-item')
+
+    id = a.attr('id')
 
     [type,abbrev] = id.split('_')
+    reg = a.attr('data-reg')
 
     if type == 'country'
       territory = App.territories.findWhere(type:type,abbrev:abbrev)
     else if type == 'city'
-      territory = App.territories.findWhere(type:type,terse:abbrev)
+      territory = App.territories.findWhere(type:type,terse:abbrev, state:reg)
     else if type == 'state'
-      territory = App.territories.findWhere(type:type,abbrev:abbrev)
+      territory = App.territories.findWhere(type:type,abbrev:abbrev, country:reg)
 
     if target.hasClass('remove')
       App.territories.remove territory
