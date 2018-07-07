@@ -1,8 +1,6 @@
 yomap
 =====
 
-yeoman version of my gmaps dragging countries/states/city app
+compare country sizes by dragging them over eachother!
 
 http://shmay.github.io/yomap
-
-managed to overwrite this url on my new GH blog ... hopefully it resets soon
